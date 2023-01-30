@@ -54,23 +54,6 @@ void gen_schedule(list *lst, person persons[ROOMS]) {
   }
 }
 
-/* void print_marks(list *lst) { */
-  /* list_p *p = lst->head; */
-  /* while (p != NULL) { */
-    /* for (int i = 0; i < ROOMS; i++) { */
-      /* if (p->marks[i] == Mark) { */
-        /* printf("x,"); */
-      /* } else { */
-        /* printf(" ,"); */
-      /* } */
-    /* } */
-    /* printf("\n"); */
-
-    /* remove_head(lst); */
-    /* p = lst->head; */
-  /* } */
-/* } */
-
 int main(int argc, char *argv[]) {
   FILE *fp;
   fp = fopen(argv[1], "rb");
