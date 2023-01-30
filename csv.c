@@ -27,6 +27,7 @@ typedef struct list {
 typedef struct person {
   int room;
   int priority;
+  int has_mark;
 } person;
 
 typedef struct parsed_data {
@@ -102,8 +103,10 @@ void cb1 (void *s, size_t len, void *data) {
   } else {
     mark m = s ? Mark : Nothing;
     set_mark(col - 1, m, payload->lst);
-    if (m == Mark)
+    if (m == Mark) {
       payload->persons[col - 1].priority++;
+      payload->persons[col - 1].has_mark = 1;
+    }
   }
 
   payload->col++;
@@ -127,6 +130,7 @@ parsed_data parse_csv(FILE* fp) {
   for (int i = 0; i < ROOMS; i++) {
     payload.persons[i].room = 500 + i + 1;
     payload.persons[i].priority = 0;
+    payload.persons[i].has_mark = 0;
   }
 
   if (csv_init(&p, CSV_EMPTY_IS_NULL | CSV_APPEND_NULL) != 0) exit(EXIT_FAILURE);
