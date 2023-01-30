@@ -4,6 +4,8 @@
 #include <errno.h>
 #include <stdlib.h>
 
+#define ROOMS 15
+
 typedef enum mark {
   Mark,
   Nothing
@@ -12,7 +14,7 @@ typedef enum mark {
 typedef struct list_p {
   struct list_p *next;
 
-  mark marks[15];
+  mark marks[ROOMS];
   char date[30]; // This is more than enough storage
 
 } list_p;
@@ -29,7 +31,7 @@ typedef struct person {
 
 typedef struct parsed_data {
   list *lst;
-  person persons[15];
+  person persons[ROOMS];
 } parsed_data;
 
 typedef struct payload {
@@ -37,6 +39,7 @@ typedef struct payload {
   int col;
 
   list *lst;
+  person persons[ROOMS];
 
 } payload;
 
@@ -55,7 +58,7 @@ void push(void* data, size_t len, list *lst) {
   for (int i = 0; i < len; i++) {
     p->date[i] = date[i];
   }
-  for (int i = 0; i < 15; i++) {
+  for (int i = 0; i < ROOMS; i++) {
     p->marks[i] = Nothing;
   }
 
@@ -99,6 +102,8 @@ void cb1 (void *s, size_t len, void *data) {
   } else {
     mark m = s ? Mark : Nothing;
     set_mark(col - 1, m, payload->lst);
+    if (m == Mark)
+      payload->persons[col - 1].priority++;
   }
 
   payload->col++;
@@ -110,7 +115,7 @@ void cb2 (int c, void *data) {
   p->col = 0;
 }
 
-list* parse_csv(FILE* fp) {
+parsed_data parse_csv(FILE* fp) {
   struct csv_parser p;
   char buf[1024];
   size_t bytes_read;
@@ -118,6 +123,11 @@ list* parse_csv(FILE* fp) {
   payload.row = 0;
   payload.col = 0;
   payload.lst = list_new();
+
+  for (int i = 0; i < ROOMS; i++) {
+    payload.persons[i].room = 500 + i + 1;
+    payload.persons[i].priority = 0;
+  }
 
   if (csv_init(&p, CSV_EMPTY_IS_NULL | CSV_APPEND_NULL) != 0) exit(EXIT_FAILURE);
   if (!fp) exit(EXIT_FAILURE);
@@ -134,5 +144,12 @@ list* parse_csv(FILE* fp) {
 
   csv_free(&p);
 
-  return payload.lst; 
+  parsed_data data;
+
+  data.lst = payload.lst;
+  for (int i = 0; i < ROOMS; i++) {
+    data.persons[i] = payload.persons[i];
+  }
+
+  return data; 
 }

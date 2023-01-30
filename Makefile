@@ -1,9 +1,9 @@
 
 LDFLAGS=-lcsv
 
-all: main
-# all: main.c
-	# gcc main.c -o main
+all: main csv.c
+# all: main.c csv.c
+	# gcc csv.c main.c -o main
 
 run: all
 	./main
